@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">
+                    {% if subject %}Editar{% else %}Nova{% endif %} Disciplina
+                </h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_save_subject') }}" method="POST">
+                    
+                    {% if subject %}
+                    <input type="hidden" name="id" value="{{ subject.id }}">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome da Disciplina</label>
+                        <input type="text" class="form-control" name="name" 
+                               value="{{ subject.name if subject else '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Professor Responsável</label>
+                        <select class="form-select" name="teacher_id" required>
+                            <option value="" disabled {% if not subject %}selected{% endif %}>Selecione...</option>
+                            {% for prof in professores %}
+                                <option value="{{ prof[0] }}" 
+                                    {% if subject and subject.teacher_id == prof[0] %}selected{% endif %}>
+                                    {{ prof[1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Certifique-se de que o professor já está cadastrado no sistema.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <a href="{{ url_for('admin_subjects') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

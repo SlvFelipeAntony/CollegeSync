@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">{% if user %}Editar{% else %}Novo{% endif %} Usuário</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_save_user') }}" method="POST">
+                    <input type="hidden" name="id" value="{{ user.id if user else '' }}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" name="name" 
+                               value="{{ user.name if user else '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" 
+                               value="{{ user.email if user else '' }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" class="form-control" name="birth_date"
+                               value="{{ user.birth_date if user else '' }}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-control" name="password"
+                               {% if not user %}required{% endif %}
+                               placeholder="{% if user %}Deixe vazio para manter a atual{% endif %}">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

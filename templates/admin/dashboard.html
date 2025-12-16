@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Painel Administrativo</h2>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card text-center h-100 shadow-sm border-primary">
+                <div class="card-body">
+                    <i class="bi bi-people-fill fs-1 text-primary"></i>
+                    <h5 class="card-title mt-2">Usuários</h5>
+                    <p class="card-text text-muted">Gerenciar alunos, professores e admins.</p>
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-primary w-100">Gerenciar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center h-100 shadow-sm border-success">
+                <div class="card-body">
+                    <i class="bi bi-book-half fs-1 text-success"></i>
+                    <h5 class="card-title mt-2">Matérias</h5>
+                    <p class="card-text text-muted">Criar disciplinas e vincular professores.</p>
+                    <a href="{{ url_for('admin_subjects') }}" class="btn btn-success w-100">Gerenciar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center h-100 shadow-sm border-warning">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check fs-1 text-warning"></i>
+                    <h5 class="card-title mt-2">Agenda Global</h5>
+                    <p class="card-text text-muted">Visualizar todos os agendamentos do sistema.</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-warning w-100">Ver Agenda</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+SECRET_KEY = 'bomdiaecia'
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = '1012132232449296'
+MYSQL_DB = 'collegesync'
+MYSQL_PORT = 3306

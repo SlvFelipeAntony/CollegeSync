@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Minha Agenda | CollegeSync{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ... (Mantenha o estilo do #calendar-container, toolbar, etc, iguais ao anterior) ... */
+
+    #calendar-container {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    /* ... (Outros estilos de botões e títulos que já fizemos) ... */
+
+    /* CORREÇÃO DO TEXTO LONGO NOS EVENTOS */
+    .fc-event {
+        cursor: pointer;
+        border: none !important;
+        border-radius: 4px; /* Ajuste fino */
+        font-size: 0.85rem;
+        /* Garante que o container respeite a largura */
+        overflow: hidden;
+    }
+
+    /* Target específico no título dentro do evento */
+    .fc-event-main {
+        white-space: nowrap;       /* Não quebra linha */
+        overflow: hidden;          /* Esconde o excesso */
+        text-overflow: ellipsis;   /* Adiciona "..." no final */
+        display: block;            /* Garante comportamento de bloco para o ellipsis funcionar */
+        padding: 2px 4px;
+    }
+
+    /* Hover e dia atual (iguais ao anterior) */
+    .fc-event:hover {
+        filter: brightness(0.9);
+    }
+    .fc-day-today {
+        background-color: rgba(13, 110, 253, 0.05) !important;
+    }
+    a.fc-col-header-cell-cushion, a.fc-daygrid-day-number {
+        text-decoration: none;
+        color: #495057;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2 class="fw-light">Minha Agenda</h2>
+            <p class="text-muted">Gerencie suas entregas e acompanhe as atividades da turma.</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div id="calendar-container">
+                <div id='calendar'></div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light border-top">
+            <div class="d-flex flex-wrap gap-4 align-items-center justify-content-center text-muted small">
+                <span><i class="bi bi-circle-fill text-primary me-1"></i> Meus Agendamentos (Editável)</span>
+                <span><i class="bi bi-circle-fill text-secondary me-1"></i> Agendamentos da Turma (Leitura)</span>
+                {% if session['usuario_tipo'] == 'teacher' %}
+                <span><i class="bi bi-circle-fill text-success me-1"></i> Criado pelo Professor</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+
+            // Definições Visuais
+            initialView: 'dayGridMonth',
+            themeSystem: 'bootstrap5',
+            locale: 'pt-br',
+            height: 700, // Altura fixa melhor
+            dayMaxEvents: true, // Se tiver muitos eventos, cria botão "+2 more"
+
+            // Cabeçalho da Barra de Ferramentas
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listMonth' // Adicionei visão de Lista
+            },
+
+            // Tradução dos Botões
+            buttonText: {
+                today: 'Hoje',
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia',
+                list: 'Lista'
+            },
+
+            // Fonte de Dados
+            events: '/agendamento/dados',
+
+            // Ação de Clique
+            eventClick: function(info) {
+                var idEvento = info.event.id;
+                window.location.href = "/agendamento/detalhes/" + idEvento;
+            },
+
+            // Renderização customizada (Opcional: Tooltip ou ícones)
+            eventContent: function(arg) {
+                // Podemos adicionar ícones dependendo do tipo futuramente
+                return {
+                    html: '<div class="fc-content"><span class="fc-title fw-bold">' + arg.event.title + '</span></div>'
+                };
+            }
+        });
+        calendar.render();
+    });
+</script>
+
+{% endblock %}

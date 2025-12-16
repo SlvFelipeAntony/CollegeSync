@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">Novo Agendamento</h4>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('create_appointment') }}" method="POST">
+            <div class="mb-3">
+                <label class="form-label">Assunto</label>
+                <input type="text" class="form-control" name="description" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Data</label>
+                    <input type="datetime-local" class="form-control" name="scheduled_at" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Matéria</label>
+                    <select class="form-select" name="subject_id" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        {% for materia in materias %}
+                        <option value="{{ materia.id }}">{{ materia.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notas</label>
+                <textarea class="form-control" name="notes"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Agendar</button>
+            <a href="{{ url_for('index') }}" class="btn btn-link">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

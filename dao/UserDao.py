@@ -133,3 +133,50 @@ class UserDao:
         cursor = self.__db.connection.cursor()
         cursor.execute(SQL_REVOKE_ADMIN, (user_id,))
         self.__db.connection.commit()
+
+    def deletar(self, user_id):
+        cursor = self.__db.connection.cursor()
+
+        # 1. Tenta remover da tabela de ADMINS (se existir)
+        cursor.execute("DELETE FROM collegesync.admins WHERE user_id = %s", (user_id,))
+
+        # 2. Verifica se é ALUNO e limpa dependências
+        cursor.execute("SELECT id FROM collegesync.students WHERE user_id = %s", (user_id,))
+        aluno = cursor.fetchone()
+        if aluno:
+            student_id = aluno[0]
+            # Remove vínculos de matérias (students_subjects)
+            cursor.execute("DELETE FROM collegesync.students_subjects WHERE student_id = %s", (student_id,))
+            # Remove agendamentos feitos pelo aluno
+            cursor.execute("DELETE FROM collegesync.appointments WHERE student_id = %s", (student_id,))
+            # Remove o registro de aluno
+            cursor.execute("DELETE FROM collegesync.students WHERE id = %s", (student_id,))
+
+        # 3. Verifica se é PROFESSOR e limpa dependências
+        cursor.execute("SELECT id FROM collegesync.teachers WHERE user_id = %s", (user_id,))
+        prof = cursor.fetchone()
+        if prof:
+            teacher_id = prof[0]
+            # Remove agendamentos criados pelo professor ou onde ele é o teacher responsável
+            cursor.execute("DELETE FROM collegesync.appointments WHERE teacher_id = %s", (teacher_id,))
+
+            # ATENÇÃO: Se deletar professor, precisamos deletar as MATÉRIAS dele ou definir teacher_id=NULL?
+            # Para evitar erro, vamos deletar as matérias dele, mas antes limpar os alunos dessas matérias
+            cursor.execute("SELECT id FROM collegesync.subjects WHERE teacher_id = %s", (teacher_id,))
+            materias = cursor.fetchall()
+            for mat in materias:
+                subject_id = mat[0]
+                # Remove alunos vinculados a essa matéria
+                cursor.execute("DELETE FROM collegesync.students_subjects WHERE subject_id = %s", (subject_id,))
+                # Remove agendamentos dessa matéria
+                cursor.execute("DELETE FROM collegesync.appointments WHERE subject_id = %s", (subject_id,))
+
+            # Agora pode deletar as matérias do professor
+            cursor.execute("DELETE FROM collegesync.subjects WHERE teacher_id = %s", (teacher_id,))
+            # Remove o registro de professor
+            cursor.execute("DELETE FROM collegesync.teachers WHERE id = %s", (teacher_id,))
+
+        # 4. Finalmente, deleta o USUÁRIO (Agora o banco deixa!)
+        cursor.execute(SQL_DELETE_USER, (user_id,))
+
+        self.__db.connection.commit()

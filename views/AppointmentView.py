@@ -148,7 +148,7 @@ def init_appointment_routes(app, db):
         appt = dao.buscar_por_id(id)
 
         # Segurança
-        if appt.student_id != session.get('perfil_id') or session['usuario_tipo'] != 'admin':
+        if appt.student_id != session.get('perfil_id') and session['usuario_tipo'] != 'admin':
             flash('Você não pode excluir agendamentos de outros.')
             return redirect(url_for('index'))
 
